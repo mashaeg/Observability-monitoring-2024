@@ -1,82 +1,105 @@
-WordPress with NGINX on VirtualBox
-Using Bitnami Package
-For setup, use the Bitnami WordPress with NGINX and SSL package.
-Installing Prometheus
-Update and Install Tools
-bash
-Copy code
-yum update -y
-yum install wget vim -y
-wget https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
-Setup User and Directories
-bash
-Copy code
-useradd --no-create-home --shell /bin/false prometheus
-mkdir /etc/prometheus /var/lib/prometheus
-chown prometheus:prometheus /etc/prometheus /var/lib/prometheus
-Extract and Move Prometheus Files
-bash
-Copy code
-tar -xvzf prometheus-2.44.0.linux-amd64.tar.gz
-mv prometheus-2.44.0.linux-amd64 prometheuspackage
-cp -r prometheuspackage/{prometheus,promtool} /usr/local/bin/
-cp -r prometheuspackage/{consoles,console_libraries} /etc/prometheus
-chown -R prometheus:prometheus /usr/local/bin/{prometheus,promtool} /etc/prometheus/{consoles,console_libraries}
-Configure Prometheus
-Edit /etc/prometheus/prometheus.yml with the specified settings and change ownership:
 
-bash
-Copy code
-chown prometheus:prometheus /etc/prometheus/prometheus.yml
-Setting Up Prometheus as a Service
-Create and configure /etc/systemd/system/prometheus.service. Then enable and start the service:
+# Project Setup Guide
 
-bash
-Copy code
-systemctl daemon-reload
-systemctl start prometheus
-systemctl status prometheus
-Verification
-Access Prometheus at http://Server-IP:9090/graph.
+This guide details setting up WordPress with NGINX on VirtualBox using Bitnami and installing Prometheus with Node Exporters and Pushgateway.
 
-Installing Node Exporters
-Download and Extract
-bash
-Copy code
-wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
-tar xzfv node_exporter-1.5.0.linux-amd64.tar.gz
-Setup and Move Binaries
-bash
-Copy code
-useradd -rs /bin/false nodeusr
-mv node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
-Create and Start Service
-Configure Node Exporter service and start it.
+## WordPress with NGINX on VirtualBox
 
-Update Prometheus Configuration
-Include Node Exporter in the Prometheus configuration.
+### Bitnami Package
+- Utilize the [Bitnami WordPress with NGINX and SSL package](https://bitnami.com/stack/wordpress-pro) for easy setup.
 
-Restart Prometheus Service
-Restart the service and check its status.
+## Installing Prometheus
 
-Verification
-Prometheus: http://localhost:9090/targets
-Node Exporter: http://localhost:9100/metrics
-Install Pushgateway
-Download and Setup
-bash
-Copy code
-wget https://github.com/prometheus/pushgateway/releases/download/v1.7.0/pushgateway-1.7.0.linux-amd64.tar.gz
-tar zxvf pushgateway-*.tar.gz
-cp pushgateway-*/pushgateway /usr/local/bin/
-useradd --no-create-home --shell /bin/false pushgateway
-chown pushgateway:pushgateway /usr/local/bin/pushgateway
-Run Pushgateway
-Run Pushgateway with the specified options.
+### Initial Steps
+- **Update and Install Tools**
+  ```bash
+  yum update -y
+  yum install wget vim -y
+  wget https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
+  ```
 
-Update Prometheus Configuration
-Include Pushgateway in the Prometheus configuration.
+### Setting Up User and Directories
+- **Configure Prometheus User and Directories**
+  ```bash
+  useradd --no-create-home --shell /bin/false prometheus
+  mkdir /etc/prometheus /var/lib/prometheus
+  chown prometheus:prometheus /etc/prometheus /var/lib/prometheus
+  ```
 
-Verification
-Prometheus: http://localhost:9090/targets
-Pushgateway: http://localhost:9091/metrics
+### Configuring Prometheus
+- **Extract and Set Up Prometheus Files**
+  ```bash
+  tar -xvzf prometheus-2.44.0.linux-amd64.tar.gz
+  mv prometheus-2.44.0.linux-amd64 prometheuspackage
+  cp -r prometheuspackage/{prometheus,promtool} /usr/local/bin/
+  cp -r prometheuspackage/{consoles,console_libraries} /etc/prometheus
+  chown -R prometheus:prometheus /usr/local/bin/{prometheus,promtool} /etc/prometheus/{consoles,console_libraries}
+  ```
+
+- **Edit Configuration File**
+  - Modify `/etc/prometheus/prometheus.yml` as needed.
+  - Change file ownership:
+    ```bash
+    chown prometheus:prometheus /etc/prometheus/prometheus.yml
+    ```
+
+- **Setting Up Prometheus Service**
+  - Create and configure `/etc/systemd/system/prometheus.service`.
+  - Enable and start the service:
+    ```bash
+    systemctl daemon-reload
+    systemctl start prometheus
+    systemctl status prometheus
+    ```
+
+- **Verification**
+  - Access the web interface at `http://Server-IP:9090/graph`.
+
+## Node Exporters Installation
+
+### Download and Setup
+- **Download Node Exporter**
+  ```bash
+  wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
+  tar xzfv node_exporter-1.5.0.linux-amd64.tar.gz
+  ```
+
+- **Configure User and Move Binaries**
+  ```bash
+  useradd -rs /bin/false nodeusr
+  mv node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
+  ```
+
+- **Create Node Exporter Service and Start It**
+  - Configure the service.
+  - Enable and start the service.
+
+- **Update Prometheus Configuration**
+  - Include Node Exporter in the configuration.
+  - Restart Prometheus service.
+
+- **Verification**
+  - Prometheus: `http://localhost:9090/targets`
+  - Node Exporter: `http://localhost:9100/metrics`
+
+## Installing Pushgateway
+
+### Setup and Configuration
+- **Download and Prepare Pushgateway**
+  ```bash
+  wget https://github.com/prometheus/pushgateway/releases/download/v1.7.0/pushgateway-1.7.0.linux-amd64.tar.gz
+  tar zxvf pushgateway-*.tar.gz
+  cp pushgateway-*/pushgateway /usr/local/bin/
+  useradd --no-create-home --shell /bin/false pushgateway
+  chown pushgateway:pushgateway /usr/local/bin/pushgateway
+  ```
+
+- **Run Pushgateway**
+  - Execute with specified options.
+
+- **Update Prometheus Configuration**
+  - Include Pushgateway in the configuration.
+
+- **Verification**
+  - Prometheus: `http://localhost:9090/targets`
+  - Pushgateway: `http://localhost:9091/metrics`
