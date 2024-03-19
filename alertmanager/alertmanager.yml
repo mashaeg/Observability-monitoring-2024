@@ -1,0 +1,14 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['severity']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'webhook_receiver'
+
+receivers:
+  - name: 'webhook_receiver'
+    webhook_configs:
+      - url: 'https://webhook.site/eb4b0da8-cdc8-4763-9e71-de9bb849cb7c'

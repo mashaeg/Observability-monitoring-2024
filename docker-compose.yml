@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:php8.0-fpm
+    volumes:
+      - /var/www/html:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+  web:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - /var/www/html:/var/www/html
+    depends_on:
+      - wordpress
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+
+  nodeexporter:
+    image: prom/node-exporter
+    volumes:
+      - "/proc:/host/proc:ro"
+      - "/sys:/host/sys:ro"
+      - "/:/rootfs:ro"
+    ports:
+      - "9100:9100"
+
+  mysqlexporter:
+    image: prom/mysqld-exporter
+    environment:
+      DATA_SOURCE_NAME: "wordpress:wordpress@(db:3306)/"
+    depends_on:
+      - db
+
+  apacheexporter:
+    image: lusotycoon/apache-exporter
+    ports:
+      - "9117:9117"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - "9093:9093"
+
+  blackboxexporter:
+    image: prom/blackbox-exporter
+    volumes:
+      - ./blackbox/blackbox.yml:/config/blackbox.yml
+    ports:
+      - "9115:9115"
+
+volumes:
+  wordpress_data:
+  db_data:
