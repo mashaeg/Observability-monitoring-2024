@@ -11,7 +11,6 @@ This repository contains a Docker Compose setup for running a WordPress website 
 ## Project Structure
 
 - `docker-compose.yml`: Docker Compose configuration file defining services like WordPress, MySQL, Nginx, Prometheus, and various exporters.
-- `GAP-1/`: Contains configuration files for Prometheus and Alertmanager.
 - `prometheus.yml`: Configuration for the Prometheus service.
 - `alertmanager.yml`: Configuration for the Alertmanager service.
 - `nginx/`: Contains Nginx configuration files.
