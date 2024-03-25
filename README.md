@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-
 На виртуальной машине установите любую open source CMS, которая включает в себя следующие компоненты: nginx, php-fpm, database (MySQL or Postgresql)
 На этой же виртуальной машине установите Prometheus exporters для сбора метрик со всех компонентов системы (начиная с VM и заканчивая DB, не забудьте про blackbox exporter, который будет проверять доступность вашей CMS)
 На этой же или дополнительной виртуальной машине установите Prometheus, задачей которого будет раз в 5 секунд собирать метрики с экспортеров.
@@ -43,8 +40,6 @@ Access the Prometheus UI at `http://localhost:9090` to view metrics and configur
 
 Alertmanager handles alerts sent by Prometheus and takes care of deduplicating, grouping, and routing them to the correct receiver. Basic configuration can be found in `alertmanager.yml`. Modify this file to set up notification methods like email, Slack, etc.
 
-
-=======
 # LAMP stack built with Docker Compose
 
 ![Landing Page](https://user-images.githubusercontent.com/43859895/141092846-905eae39-0169-4fd7-911f-9ff32c48b7e8.png)
@@ -325,14 +320,6 @@ If you would like your local testing environment to exactly match your productio
 2. Using the `443` example from the vhost file (`config/vhosts/default.conf`), make new rules that match your domain name and certificate file names.
 
 Done. The LAMP container will auto pull in any SSL certificates in `config/ssl` when it starts. As long as you configure the vhosts file correctly and place the SSL certificates in `config/ssl`, any time you turn on your LAMP container `https` will work on your specified domains.
-
-## Contributing
-
-We are happy if you want to create a pull request or help people with their issues. If you want to create a PR, please remember that this stack is not built for production usage, and changes should be good for general purpose and not overspecialized.
-
-> Please note that we simplified the project structure from several branches for each php version, to one centralized master branch. Please create your PR against master branch.
->
-> Thank you!
 
 ## Why you shouldn't use this stack unmodified in production
 
